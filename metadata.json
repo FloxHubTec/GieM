@@ -1,6 +1,6 @@
 {
   "name": "GieM - Gestão Inteligente de Entrega",
-  "description": "Smart logistics management system with AI-powered receipt scanning and automated data extraction.",
+  "description": "Sistema de gestão logística inteligente com digitalização de comprovantes e extração automática de dados, desenvolvido por Floxhub.",
   "requestFramePermissions": [
     "camera"
   ]

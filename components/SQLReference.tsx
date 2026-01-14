@@ -1,4 +1,5 @@
 
+// Copyright © 2024 Floxhub. Todos os direitos reservados.
 import React, { useState } from 'react';
 import { Copy, Check, Terminal, Info } from 'lucide-react';
 
@@ -6,7 +7,7 @@ const SQLReference: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const sqlCode = `
--- TABELA PRINCIPAL
+-- TABELA PRINCIPAL GieM
 create table receipts (
   id uuid default gen_random_uuid() primary key,
   created_at timestamptz default now(),
@@ -39,14 +40,14 @@ using (auth.uid() = user_id);
   };
 
   return (
-    <div className="bg-brand-surface rounded-2xl shadow-2xl border border-brand-border overflow-hidden">
+    <div className="bg-brand-surface rounded-2xl shadow-2xl border border-brand-border overflow-hidden animate-in fade-in duration-500">
       <div className="p-8 border-b border-brand-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/30">
         <div>
           <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
             <Terminal className="w-6 h-6 text-brand-primary" />
-            Configuração Supabase
+            Configuração do Banco de Dados
           </h2>
-          <p className="text-zinc-500 text-sm mt-1 font-medium">Provisione seu banco de dados para o GieM.</p>
+          <p className="text-zinc-500 text-sm mt-1 font-medium">Provisione a infraestrutura necessária para o GieM.</p>
         </div>
         <button 
           onClick={handleCopy}
@@ -67,7 +68,7 @@ using (auth.uid() = user_id);
             <span className="flex items-center justify-center w-7 h-7 rounded-full bg-brand-primary/10 text-brand-primary font-black text-xs border border-brand-primary/20">1</span>
             <h3 className="text-lg font-bold text-white tracking-tight">Esquema de Dados & Segurança</h3>
           </div>
-          <p className="text-zinc-500 mb-4 text-sm font-medium">Execute no SQL Editor para criar a infraestrutura necessária:</p>
+          <p className="text-zinc-500 mb-4 text-sm font-medium">Execute este script no seu terminal de banco de dados para criar a infraestrutura:</p>
           <div className="relative group">
             <pre className="bg-brand-dark text-orange-500/90 p-6 rounded-2xl overflow-x-auto text-xs leading-relaxed font-mono border border-brand-border shadow-inner">
               {sqlCode}
@@ -78,21 +79,25 @@ using (auth.uid() = user_id);
         <section>
           <div className="flex items-center gap-2 mb-4">
             <span className="flex items-center justify-center w-7 h-7 rounded-full bg-brand-primary/10 text-brand-primary font-black text-xs border border-brand-primary/20">2</span>
-            <h3 className="text-lg font-bold text-white tracking-tight">Armazenamento (Storage)</h3>
+            <h3 className="text-lg font-bold text-white tracking-tight">Armazenamento em Nuvem</h3>
           </div>
           <div className="bg-orange-500/5 border border-brand-primary/10 rounded-2xl p-6">
             <div className="flex items-start gap-4">
               <div className="p-2 bg-brand-primary/10 rounded-lg mt-1">
-                <Info className="w-5 h-5 text-brand-primary" />
+                <span className="text-brand-primary font-black">!</span>
               </div>
               <ol className="space-y-3 text-zinc-400 text-sm font-medium list-decimal list-inside">
-                <li>Acesse a aba <strong className="text-white">Storage</strong> no Supabase.</li>
-                <li>Crie um bucket chamado <code className="bg-brand-dark px-2 py-0.5 rounded text-brand-primary font-mono text-xs border border-brand-border">receipt-images</code>.</li>
-                <li>Marque como <strong className="text-brand-primary">Public</strong> para facilitar o upload via frontend.</li>
+                <li>Acesse o painel de controle do <strong className="text-white">Servidor</strong>.</li>
+                <li>Crie uma área de armazenamento chamada <code className="bg-brand-dark px-2 py-0.5 rounded text-brand-primary font-mono text-xs border border-brand-border">receipt-images</code>.</li>
+                <li>Defina a política de acesso como <strong className="text-brand-primary">Pública</strong> para digitalização imediata.</li>
               </ol>
             </div>
           </div>
         </section>
+
+        <div className="pt-4 border-t border-brand-border">
+          <p className="text-[10px] text-center text-zinc-700 font-bold uppercase tracking-widest">Tecnologia desenvolvida por Floxhub</p>
+        </div>
       </div>
     </div>
   );

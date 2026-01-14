@@ -1,230 +1,165 @@
 
+// Copyright © 2024 Floxhub. Todos os direitos reservados.
 import React, { useState, useEffect } from 'react';
-import Scanner from './components/Scanner';
-import ReceiptTable from './components/ReceiptTable';
-import SQLReference from './components/SQLReference';
-import { Receipt, ExtractionResult } from './types';
-import { LayoutDashboard, Camera, Database, Package } from 'lucide-react';
+import { 
+  Package, X, Search, History, 
+  User, Home, Camera, Calendar
+} from 'lucide-react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import Dashboard from './components/Dashboard';
+import CaptureModal from './components/CaptureModal';
+import HistoryPage from './components/HistoryPage';
+import Login from './components/Login';
+import AdminProfile from './components/AdminProfile';
+import { UserProfile } from './types';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'scan' | 'sql'>('dashboard');
-  const [receipts, setReceipts] = useState<Receipt[]>([]);
-  const [lastExtraction, setLastExtraction] = useState<{data: ExtractionResult, image: string} | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'history' | 'search' | 'profile'>('dashboard');
+  const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
+  const [searchDate, setSearchDate] = useState('');
 
-  useEffect(() => {
-    // Dados iniciais (mock)
-    const mock: Receipt[] = [
-      {
+  /**
+   * Credenciais para o usuário testar:
+   * Admin: diego@floxhub.com / admin
+   * Operador: operador@floxhub.com / 1234
+   */
+  const handleLogin = async (email: string, pass: string) => {
+    const lowerEmail = email.toLowerCase();
+    
+    // Admin Master: Diego
+    if ((lowerEmail.includes('diego') || lowerEmail === 'admin@floxhub.com') && pass === 'admin') {
+      setUser({
         id: '1',
-        nf_number: '001245',
-        receiver_name: 'Ricardo Silva',
-        product_description: '2x Monitor LG 27", 1x Teclado Mecânico',
-        delivery_date: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        image_path: '',
-        content_type: 'image/jpeg',
-        user_id: 'user-1'
-      }
-    ];
-    setReceipts(mock);
-  }, []);
-
-  const handleExtraction = (data: ExtractionResult, imageBase64: string) => {
-    setLastExtraction({ data, image: `data:image/jpeg;base64,${imageBase64}` });
+        name: 'Diego Floxhub',
+        email: email,
+        phone: '(11) 98765-4321',
+        role: 'admin'
+      });
+      setIsLoggedIn(true);
+    } 
+    // Operadores Comuns
+    else if (pass === '1234') {
+      setUser({
+        id: '2',
+        name: 'Operador Logístico',
+        email: email,
+        phone: '(11) 90000-0000',
+        role: 'operator'
+      });
+      setIsLoggedIn(true);
+    }
+    else {
+      throw new Error("Login ou senha inválidos.");
+    }
   };
 
-  const saveReceipt = () => {
-    if (!lastExtraction) return;
-    const newReceipt: Receipt = {
-      id: Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString(),
-      nf_number: lastExtraction.data.nf_number,
-      receiver_name: lastExtraction.data.receiver_name,
-      product_description: lastExtraction.data.product_description,
-      delivery_date: lastExtraction.data.delivery_date || new Date().toISOString(),
-      image_path: 'local-path',
-      content_type: 'image/jpeg',
-      user_id: 'user-1'
-    };
-    setReceipts([newReceipt, ...receipts]);
-    setLastExtraction(null);
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUser(null);
     setActiveTab('dashboard');
   };
 
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
-    <div className="min-h-screen flex flex-col selection:bg-brand-primary selection:text-white">
-      {/* Header */}
-      <header className="bg-brand-surface border-b border-brand-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="bg-brand-primary p-2 rounded-lg shadow-lg shadow-orange-900/20">
-                <Package className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-black text-white leading-none tracking-tight">GieM</h1>
-                <p className="text-[10px] text-brand-primary uppercase tracking-[0.2em] font-black">Midnight Cargo</p>
-              </div>
-            </div>
-            
-            <nav className="flex gap-2">
-              <button 
-                onClick={() => setActiveTab('dashboard')}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'dashboard' ? 'text-brand-primary bg-orange-500/10' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-              </button>
-              <button 
-                onClick={() => setActiveTab('scan')}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'scan' ? 'text-brand-primary bg-orange-500/10' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-              >
-                <Camera className="w-4 h-4" />
-                <span className="hidden sm:inline">Escanear</span>
-              </button>
-              <button 
-                onClick={() => setActiveTab('sql')}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${activeTab === 'sql' ? 'text-brand-primary bg-orange-500/10' : 'text-zinc-400 hover:text-white hover:bg-zinc-800'}`}
-              >
-                <Database className="w-4 h-4" />
-                <span className="hidden sm:inline">Supabase</span>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+    <div className="min-h-screen bg-brand-dark flex flex-col selection:bg-brand-primary selection:text-white">
+      
+      <main className="flex-1 w-full">
         {activeTab === 'dashboard' && (
-          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-              <div>
-                <h2 className="text-3xl font-black text-white tracking-tight">Logística de Cargas</h2>
-                <p className="text-zinc-500 font-medium">Controle de entregas e recebimentos em tempo real.</p>
-              </div>
-              <button 
-                onClick={() => setActiveTab('scan')}
-                className="bg-brand-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition-all shadow-xl shadow-orange-950/40 flex items-center gap-2 group"
-              >
-                <Camera className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                Capturar Canhoto
-              </button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { label: 'Entregas Registradas', val: receipts.length, color: 'text-white' },
-                { label: 'Precisão IA', val: '99.8%', color: 'text-brand-primary' },
-                { label: 'Status Sistema', val: 'Online', color: 'text-green-500' }
-              ].map((stat, i) => (
-                <div key={i} className="bg-brand-surface p-6 rounded-2xl border border-brand-border">
-                  <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">{stat.label}</p>
-                  <p className={`text-3xl font-black mt-2 ${stat.color}`}>{stat.val}</p>
-                </div>
-              ))}
-            </div>
+          <Dashboard 
+            userName={user?.name.split(' ')[0] || 'Usuário'}
+            onScanClick={() => setIsCaptureModalOpen(true)} 
+            onTabChange={(tab) => setActiveTab(tab as any)}
+            activeTab={activeTab}
+          />
+        )}
 
-            <ReceiptTable receipts={receipts} />
+        {activeTab === 'history' && (
+          <div className="min-h-screen">
+            <HistoryPage onBack={() => setActiveTab('dashboard')} />
+            <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onScanClick={() => setIsCaptureModalOpen(true)} />
           </div>
         )}
 
-        {activeTab === 'scan' && (
-          <div className="max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-300">
-            {!lastExtraction ? (
-              <Scanner onDataExtracted={handleExtraction} />
-            ) : (
-              <div className="bg-brand-surface rounded-2xl shadow-2xl border border-brand-border overflow-hidden">
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-2/5 bg-brand-dark flex items-center justify-center p-6 border-r border-brand-border">
-                    <img 
-                      src={lastExtraction.image} 
-                      alt="Preview" 
-                      className="max-h-96 w-full object-contain rounded-lg shadow-2xl border border-brand-border"
-                    />
-                  </div>
-                  <div className="md:w-3/5 p-8">
-                    <div className="flex justify-between items-start mb-8">
-                      <div>
-                        <h2 className="text-2xl font-black text-white">Validar Carga</h2>
-                        <p className="text-zinc-500 text-sm">IA processou os dados automaticamente.</p>
-                      </div>
-                      <div className="bg-orange-500/10 text-brand-primary text-[10px] px-2 py-1 rounded-md font-black uppercase tracking-wider border border-orange-500/20">
-                        Extração IA
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-5">
-                      <div className="group">
-                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1.5 group-focus-within:text-brand-primary transition-colors">Nota Fiscal (NF-e)</label>
-                        <input 
-                          type="text" 
-                          value={lastExtraction.data.nf_number}
-                          onChange={(e) => setLastExtraction({...lastExtraction, data: {...lastExtraction.data, nf_number: e.target.value}})}
-                          className="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-primary focus:outline-none focus:border-transparent font-bold text-white transition-all"
-                        />
-                      </div>
-                      <div className="group">
-                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1.5 group-focus-within:text-brand-primary transition-colors">Recebedor Final</label>
-                        <input 
-                          type="text" 
-                          value={lastExtraction.data.receiver_name}
-                          onChange={(e) => setLastExtraction({...lastExtraction, data: {...lastExtraction.data, receiver_name: e.target.value}})}
-                          className="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-primary focus:outline-none focus:border-transparent text-zinc-200 transition-all"
-                        />
-                      </div>
-                      <div className="group">
-                        <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1.5 group-focus-within:text-brand-primary transition-colors">Manifesto de Produtos</label>
-                        <textarea 
-                          rows={3}
-                          value={lastExtraction.data.product_description}
-                          onChange={(e) => setLastExtraction({...lastExtraction, data: {...lastExtraction.data, product_description: e.target.value}})}
-                          className="w-full bg-brand-dark border border-brand-border rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand-primary focus:outline-none focus:border-transparent text-zinc-300 resize-none transition-all"
-                        />
-                      </div>
-                    </div>
+        {activeTab === 'search' && (
+           <div className="p-6 pb-32 animate-in fade-in">
+             <div className="mb-8">
+               <h2 className="text-2xl font-black text-white tracking-tight">Localizar Cargas</h2>
+               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-1">Busca avançada no servidor GieM</p>
+             </div>
+             
+             <div className="space-y-4">
+               <div className="relative group">
+                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-brand-primary w-5 h-5 transition-colors" />
+                 <input 
+                  type="text" 
+                  placeholder="NF, Cliente ou Produto..." 
+                  className="w-full bg-brand-surface border border-brand-border rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all" 
+                 />
+               </div>
 
-                    <div className="mt-10 flex gap-4">
-                      <button 
-                        onClick={() => setLastExtraction(null)}
-                        className="flex-1 px-4 py-4 rounded-xl border border-brand-border text-zinc-400 font-bold hover:bg-zinc-800 hover:text-white transition-all"
-                      >
-                        Descartar
-                      </button>
-                      <button 
-                        onClick={saveReceipt}
-                        className="flex-[2] px-4 py-4 rounded-xl bg-brand-primary text-white font-black hover:bg-orange-600 transition-all shadow-lg shadow-orange-950/20"
-                      >
-                        Confirmar Entrega
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+               <div className="relative group">
+                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-brand-primary w-5 h-5 transition-colors" />
+                 <input 
+                  type="date" 
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                  className="w-full bg-brand-surface border border-brand-border rounded-2xl py-4 pl-12 pr-4 text-zinc-400 focus:outline-none focus:ring-2 focus:ring-brand-primary font-bold uppercase text-xs tracking-widest transition-all" 
+                 />
+               </div>
+             </div>
+
+             <div className="mt-12 text-center text-zinc-600">
+               <Package className="w-12 h-12 mx-auto mb-4 opacity-10" />
+               <p className="text-[10px] font-black uppercase tracking-[0.3em]">Aguardando termo para consulta</p>
+             </div>
+             <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onScanClick={() => setIsCaptureModalOpen(true)} />
+           </div>
         )}
 
-        {activeTab === 'sql' && (
-          <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
-            <SQLReference />
-          </div>
+        {activeTab === 'profile' && user && (
+          <>
+            <AdminProfile 
+              user={user} 
+              onLogout={handleLogout} 
+            />
+            <BottomNav activeTab={activeTab} onTabChange={setActiveTab} onScanClick={() => setIsCaptureModalOpen(true)} />
+          </>
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-brand-surface border-t border-brand-border py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Package className="w-5 h-5 text-brand-primary" />
-            <span className="text-zinc-500 font-black text-xs uppercase tracking-[0.3em]">GieM Platform</span>
-          </div>
-          <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
-            Logística Inteligente &copy; 2024 • Powered by Gemini AI
-          </p>
-        </div>
-      </footer>
+      <CaptureModal 
+        isOpen={isCaptureModalOpen} 
+        onClose={() => setIsCaptureModalOpen(false)} 
+        onConfirm={() => {
+          setIsCaptureModalOpen(false);
+          setActiveTab('history');
+        }} 
+      />
     </div>
+  );
+};
+
+const BottomNav: React.FC<{activeTab: string, onTabChange: (tab: any) => void, onScanClick: () => void}> = ({ activeTab, onTabChange, onScanClick }) => {
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-6 pb-8 pt-4 bg-brand-dark/95 backdrop-blur-lg border-t border-brand-border flex justify-between items-center">
+      <button onClick={() => onTabChange('dashboard')} className={cn("flex flex-col items-center gap-1 px-3", activeTab === 'dashboard' ? 'text-brand-primary' : 'text-zinc-600')}><Home className="w-6 h-6" /><span className="text-[10px] font-black uppercase tracking-tighter">Início</span></button>
+      <button onClick={() => onTabChange('history')} className={cn("flex flex-col items-center gap-1 px-3", activeTab === 'history' ? 'text-brand-primary' : 'text-zinc-600')}><History className="w-6 h-6" /><span className="text-[10px] font-black uppercase tracking-tighter">Histórico</span></button>
+      <div className="relative -top-8">
+        <button onClick={onScanClick} className="w-16 h-16 bg-gradient-to-tr from-orange-600 to-orange-400 rounded-full shadow-2xl shadow-orange-500/40 flex items-center justify-center text-white border-4 border-brand-dark transition-transform active:scale-90"><Camera className="w-8 h-8" /></button>
+      </div>
+      <button onClick={() => onTabChange('search')} className={cn("flex flex-col items-center gap-1 px-3", activeTab === 'search' ? 'text-brand-primary' : 'text-zinc-600')}><Search className="w-6 h-6" /><span className="text-[10px] font-black uppercase tracking-tighter">Busca</span></button>
+      <button onClick={() => onTabChange('profile')} className={cn("flex flex-col items-center gap-1 px-3", activeTab === 'profile' ? 'text-brand-primary' : 'text-zinc-600')}><User className="w-6 h-6" /><span className="text-[10px] font-black uppercase tracking-tighter">Perfil</span></button>
+    </nav>
   );
 };
 

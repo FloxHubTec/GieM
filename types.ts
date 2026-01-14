@@ -17,3 +17,13 @@ export interface ExtractionResult {
   product_description: string;
   delivery_date?: string;
 }
+
+export type UserRole = 'admin' | 'operator';
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+}
