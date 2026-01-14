@@ -1,0 +1,7 @@
+{
+  "name": "GieM - Gestão Inteligente de Entrega",
+  "description": "Smart logistics management system with AI-powered receipt scanning and automated data extraction.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
