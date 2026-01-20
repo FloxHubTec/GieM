@@ -5,8 +5,8 @@ import {
   Loader2, Filter, ChevronRight, PackageX, AlertCircle,
   X, ArrowLeft
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { Receipt } from '../types';
+import { supabase } from '../../lib/supabase';
+import { Receipt } from '../../types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

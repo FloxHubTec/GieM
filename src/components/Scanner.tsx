@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
-import { extractReceiptData } from '../services/geminiService';
-import { ExtractionResult } from '../types';
+import { extractReceiptData } from '../../services/geminiService';
+import { ExtractionResult } from '../../types';
 import { Camera, Upload, AlertCircle, Loader2 } from 'lucide-react';
 
 interface ScannerProps {

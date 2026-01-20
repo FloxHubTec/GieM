@@ -2,9 +2,9 @@
 // Copyright © 2024 Floxhub. Todos os direitos reservados.
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, FileText, X, Check, Loader2, Upload, AlertCircle, FileDigit, Calendar } from 'lucide-react';
-import { extractReceiptData } from '../services/geminiService';
-import { uploadReceipt } from '../services/receiptService';
-import { ExtractionResult, Receipt } from '../types';
+import { extractReceiptData } from '../../services/geminiService';
+import { uploadReceipt } from '../../services/receiptService';
+import { ExtractionResult, Receipt } from '../../types';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { 
   User, Mail, Phone, LogOut, ShieldCheck, UserPlus, Trash2, ShieldAlert
 } from 'lucide-react';
-import { UserProfile } from '../types';
+import { UserProfile } from '../../types';
 
 interface AdminProfileProps {
   user: UserProfile;

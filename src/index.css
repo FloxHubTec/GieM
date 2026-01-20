@@ -1,0 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+@import "tailwindcss-animate";
+
+/* Tokens base */
+:root {
+  --brand-primary: #f97316;
+  --brand-dark: #09090b;
+  --brand-surface: #18181b;
+  --brand-border: #27272a;
+}
+
+/* Integração com Tailwind v4 */
+@theme {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-surface: var(--brand-surface);
+  --color-brand-border: var(--brand-border);
+
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* Base global */
+body {
+  font-family: var(--font-sans);
+}
