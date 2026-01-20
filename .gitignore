@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+# variaveis 
+.env
+
+#bibliotecas
+package-lock.json
