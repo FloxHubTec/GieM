@@ -100,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </form>
 
         <p className="text-center text-[10px] font-black uppercase tracking-widest text-zinc-700">
-          Desenvolvido por Floxhub © 2024
+          Desenvolvido por Floxhub © 2026
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 
-// Copyright © 2024 Floxhub. Todos os direitos reservados.
+// Copyright © 2026 Floxhub. Todos os direitos reservados.
 import React, { useState } from 'react';
 import { 
   User, Mail, Phone, LogOut, ShieldCheck, UserPlus, Trash2, ShieldAlert

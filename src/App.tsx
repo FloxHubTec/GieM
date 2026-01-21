@@ -1,4 +1,4 @@
-// Copyright © 2024 Floxhub. Todos os direitos reservados.
+// Copyright © 2026 Floxhub. Todos os direitos reservados.
 import React, { useState, useEffect } from "react";
 import {
   Package,

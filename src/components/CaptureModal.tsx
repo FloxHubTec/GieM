@@ -1,5 +1,5 @@
 
-// Copyright © 2024 Floxhub. Todos os direitos reservados.
+// Copyright © 2026 Floxhub. Todos os direitos reservados.
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, FileText, X, Check, Loader2, Upload, AlertCircle, FileDigit, Calendar } from 'lucide-react';
 import { extractReceiptData } from '../../services/geminiService';
